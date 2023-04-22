@@ -5,17 +5,20 @@ from pdrm.residential_model import equivalent_load
 
 
 def customer_evaluation_grid_connected(cov_convergence=None, load_point_failure_rate=None,
-                                       load_point_repair_time=None, peak_load=None, hourly_load=None,
+                                       load_point_repair_time=None, hourly_load=None,
                                        acm_module_rating=None, acm_failure_rate=None,
                                        acm_repair_rate=None, ghi_hourly=None,
-                                       pv_rcr=None, rcr_es=None, customer_der_type='pv_bess',
+                                       customer_der_type='pv_bess',
                                        bess_state_of_charge_min=None, bess_failure_rate=None,
-                                       bess_repair_rate=None, pv_panels=None, bess_capacity=None):
+                                       bess_repair_rate=None, pv_capacity=None, bess_capacity=None,
+                                       bess_power_limit=None):
     """Return aif, aid, eens, average energy from grid of a grid connected customer.
 
     Evaluates average interruption frequency(aif), average interruption duration(aid), expected energy not served(eens)
     of a customer connected to a loadpoint of the grid. Load point reliability indices are known in this case.
 
+    :param bess_power_limit:
+    :param pv_capacity:
     :param bess_capacity:
     :param pv_panels: int
                 number of panels installed
@@ -97,12 +100,13 @@ def customer_evaluation_grid_connected(cov_convergence=None, load_point_failure_
         # synthetic operating history of the loadpoint to which the customer is connected
         load_point_history = loadpoint_history(load_point_failure_rate, load_point_repair_time, years)
 
-        net_load = equivalent_load(peak_load=peak_load, hourly_load=hourly_load, acm_module_rating=acm_module_rating,
+        net_load = equivalent_load(hourly_load=hourly_load, acm_module_rating=acm_module_rating,
                                    acm_failure_rate=acm_failure_rate, acm_repair_rate=acm_repair_rate,
-                                   solar_ghi=ghi_hourly, rcr=pv_rcr, years=years, customer_der_type=customer_der_type,
+                                   solar_ghi=ghi_hourly, years=years, customer_der_type=customer_der_type,
                                    lp_syn_history=load_point_history, bess_state_of_charge_min=bess_state_of_charge_min,
                                    bess_failure_rate=bess_failure_rate, bess_repair_rate=bess_repair_rate,
-                                   rcr_es=rcr_es, pv_panels=pv_panels, bess_capacity=bess_capacity)
+                                   pv_capacity=pv_capacity, bess_capacity=bess_capacity,
+                                   bess_power_limit=bess_power_limit)
 
         net_load = np.round(net_load, 3)
 
@@ -195,11 +199,21 @@ def customer_evaluation_grid_connected(cov_convergence=None, load_point_failure_
     aens_noder = energy_not_served_noder.mean()
     aefg_noder = hourly_load.sum()
 
-    return aif, aid, aens, average_energy_from_grid, aif_noder, aid_noder, aens_noder, aefg_noder
+    indices = {'AID': aid,
+               'AIF': aif,
+               'AENS': aens,
+               'AEFG': average_energy_from_grid,
+               'AIF_noder': aif_noder,
+               'AID_noder': aid_noder,
+               'AENS_noder': aens_noder,
+               'AEFG_noder': aefg_noder}
+
+    return indices
 
 
+# TODO: Update for standalone evaluation
 def customer_evaluation_standalone(cov_convergence=0.05, peak_load=None, hourly_load=None, ghi_hourly=None,
-                                   customer_der_type='pv_bess_standalone', pv_panels=None, bess_capacity=None):
+                                   customer_der_type='pv_bess_standalone', pv_capacity=None, bess_capacity=None):
     cov = 1
     year_counter = 0
     interruption_frequency = np.empty(0)
@@ -212,7 +226,7 @@ def customer_evaluation_standalone(cov_convergence=0.05, peak_load=None, hourly_
 
         net_load = equivalent_load(peak_load=peak_load, hourly_load=hourly_load,
                                    solar_ghi=ghi_hourly, years=years, customer_der_type=customer_der_type,
-                                   pv_panels=pv_panels, bess_capacity=bess_capacity)
+                                   pv_capacity=pv_capacity, bess_capacity=bess_capacity)
 
         net_load = np.round(net_load, 3)
 
@@ -234,7 +248,6 @@ def customer_evaluation_standalone(cov_convergence=0.05, peak_load=None, hourly_
             else:
                 sample_ens[i] = ens_load.sum()
 
-
         interruption_frequency = np.append(interruption_frequency, sample_if)
         interruption_duration = np.append(interruption_duration, sample_id)
         energy_not_served = np.append(energy_not_served, sample_ens)
@@ -249,4 +262,8 @@ def customer_evaluation_standalone(cov_convergence=0.05, peak_load=None, hourly_
     aid = interruption_duration.mean()
     aens = energy_not_served.mean()
 
-    return aid, aif, aens
+    indices = {'AID': aid,
+               'AIF': aif,
+               'AENS': aens}
+
+    return indices

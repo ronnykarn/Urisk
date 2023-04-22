@@ -5,22 +5,18 @@ from pdrm.bess_model import bess_history
 from pdrm.pv_model import msmpv
 
 
-def equivalent_load(peak_load=None, hourly_load=None, acm_module_rating=0.3, acm_failure_rate=4.35133e-05,
-                    acm_repair_rate=0.0964337280, solar_ghi=None, rcr=None, years=None, customer_der_type=None,
-                    lp_syn_history=None, bess_state_of_charge_min=0.1, pv_panels=None, rcr_es=None, bess_capacity=None,
-                    bess_failure_rate=0.0000114155, bess_repair_rate=0.1):
+def equivalent_load(hourly_load=None, acm_module_rating=0.3, acm_failure_rate=4.35133e-05,
+                    acm_repair_rate=0.0964337280, solar_ghi=None, years=None, customer_der_type=None,
+                    lp_syn_history=None, bess_state_of_charge_min=0.1, pv_capacity=None, bess_capacity=None,
+                    bess_failure_rate=0.0000114155, bess_repair_rate=0.1, bess_power_limit=None):
     """Returns hourly net load of the customer for the stipulated simulation horizon
 
     Evaluates net load of the customer. Based on the type of customer DER, the function uses different formulation to
     evaluate the net load of the system. Uses the multi-state model for the pv system output
 
+    :param bess_power_limit:
+    :param pv_capacity:
     :param bess_capacity:
-    :param rcr_es: float
-                rated capacity ratio of the ES system
-    :param pv_panels: int
-                number of pv panels installed
-    :param peak_load: float, kW
-                peak load of the customer
 
     :param hourly_load: ndarray, kW
                 hourly load of the customer for a typical meteorological year
@@ -37,8 +33,6 @@ def equivalent_load(peak_load=None, hourly_load=None, acm_module_rating=0.3, acm
     :param solar_ghi: ndarray, kW
                 gross horizontal irradiation at the customer location for a typical meteorological year
 
-    :param rcr: float
-                rated capacity of the PV system (by peak)
 
     :param years: int
                 simulation time in years
@@ -67,15 +61,7 @@ def equivalent_load(peak_load=None, hourly_load=None, acm_module_rating=0.3, acm
     """
 
     # Initialization
-    if not rcr:
-        number_of_acm_modules = pv_panels
-    else:
-        number_of_acm_modules = np.ceil(rcr * peak_load / acm_module_rating)
-
-    if not rcr_es:
-        bess_capacity = bess_capacity
-    else:
-        bess_capacity = np.ceil(peak_load * rcr_es)
+    number_of_acm_modules = np.ceil(pv_capacity / acm_module_rating)
 
     derating_factor = 0.8
     # PV output per module
@@ -87,7 +73,6 @@ def equivalent_load(peak_load=None, hourly_load=None, acm_module_rating=0.3, acm
     # TODO: insert a formula for number of bess modules
 
     bess_state_of_charge = 1
-    bess_power_limit = np.ceil(peak_load * 2)
 
     # initialize simulation parameters
     net_load = np.zeros(8760 * years)
