@@ -1,6 +1,5 @@
 # evaluate the revenue lost by the utility in the presence of BTM DER
 
-import numpy as np
 import pandas as pd
 from import_data import import_data
 from res_unit import ResUnit
@@ -28,11 +27,12 @@ laResUnit = ResUnit(load_profile=data['countyLoadProfiles'][testCounty],
                     net_metering_price=0,
                     norm=False)
 laResUnit.ESPowerLimit = 2*peakLoad
-
-if netMetering == 'Y' or 'y':
+if netMetering in ['y', 'Y']:
     laResUnit.netMeteringPrice = laResUnit.retailPrice / 2
-else:
+elif netMetering in ['n', 'N']:
     laResUnit.netMeteringPrice = 0
+else:
+    exit()
 
 PVMax = 10.5
 PVStep = 1.5
