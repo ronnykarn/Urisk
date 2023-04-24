@@ -1,5 +1,4 @@
 from pulp import *
-import numpy as np
 from pdrm.bess_model import *
 from pdrm.ceval_indices import *
 from revenue_loss import RevenueLoss
@@ -84,7 +83,7 @@ class ResUnit:
         self.optPVSize = X.varValue * self.PVModuleRating
         self.optESSize = B.varValue * self.ESModuleRating
 
-        return self.optPVSize, self.optESSize
+        return [self.optPVSize, self.optESSize]
 
     def netLoadNoFailures(self):
         soc = 1
