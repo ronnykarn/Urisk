@@ -3,7 +3,7 @@
 import pandas as pd
 from import_data import import_data
 from res_unit import ResUnit
-from revenue_loss import RevenueLoss
+from risk import RevenueLoss
 import random as r
 
 r.seed(227)
