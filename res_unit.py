@@ -1,7 +1,6 @@
 from pulp import *
 from pdrm.bess_model import *
 from pdrm.ceval_indices import *
-from revenue_loss import RevenueLoss
 
 
 class ResUnit:
@@ -98,13 +97,6 @@ class ResUnit:
         setattr(self, 'netLoad', netLoad)
 
         return netLoad
-
-    def riskToUtility(self):
-
-        defectionCriteria = 1.2  # define something greater than 1
-        risk = RevenueLoss(defectionCriteria, self.loadTimeSeries, self.netLoadNoFailures(), self.retailPrice,
-                           self.netMeteringPrice) / (np.multiply(self.loadTimeSeries, self.retailPrice).sum())
-        return risk
 
     def evalReliabilityGridConnected(self):
         indices = customer_evaluation_grid_connected(cov_convergence=0.075,
