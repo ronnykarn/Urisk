@@ -4,7 +4,7 @@ import seaborn as sns
 
 plt.style.use('ggplot')
 
-sizedLocations = pd.read_csv('results\\datafiles\\countywise_sized.csv')
+sizedLocations = pd.read_csv('../results/datafiles/countywise_sized.csv')
 
 # dropping outliers
 dropIndex = sizedLocations[(sizedLocations['PV(kW)'] > 70) | (sizedLocations['ES(kWh)'] > 70)].index

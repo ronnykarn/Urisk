@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 plt.style.use('ggplot')
-resultsNM = pd.read_csv('results\\datafiles\\revenue_loss_nm_cwise.csv')
-results = pd.read_csv('results\\datafiles\\revenue_loss_cwise.csv')
+resultsNM = pd.read_csv('../results/datafiles/revenue_loss_nm_cwise.csv')
+results = pd.read_csv('../results/datafiles/revenue_loss_cwise.csv')
 climateZoneHue = ['#63b0c0', '#6d7cbd', '#8cb533', '#f1a336', '#b35414']
 
 cwiseNMPlot = plt.figure()

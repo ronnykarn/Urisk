@@ -20,8 +20,8 @@ plt.rc('legend', fontsize=18)
 plt.rc('figure', titlesize=20)
 
 # import results
-revenueLossLA = pd.read_csv('results\\datafiles\\revenue_loss_la.csv')
-revenueLossNMLA = pd.read_csv('results\\datafiles\\revenue_loss_nm_la.csv')
+revenueLossLA = pd.read_csv('../results/datafiles/revenue_loss_la.csv')
+revenueLossNMLA = pd.read_csv('../results/datafiles/revenue_loss_nm_la.csv')
 
 dfHeatmap = revenueLossLA.pivot(index='ES(kWh)', columns='PV(kW)', values='Revenue_loss')
 dfHeatmap = dfHeatmap.iloc[::-1]

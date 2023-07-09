@@ -49,7 +49,7 @@ for step in range(1, 5):
     jointSampleDf = pd.DataFrame(jointSample, columns=['PVnorm', 'ESnorm'])
 
     if step == 1:
-        dependencePlot = sns.jointplot(data=jointSampleDf, x = 'PVnorm', y='ESnorm', color= colors[step-1],
+        dependencePlot = sns.jointplot(data=jointSampleDf, x='PVnorm', y='ESnorm', color=colors[step-1],
                                        kind='kde')
         dependencePlot.fig.suptitle('Joint distribution (PVnorm, ESnorm) at scale = '+str(scale))
         figName = 'joint_distribution_'+str(scale)+'.png'
@@ -64,7 +64,7 @@ for step in range(1, 5):
                       marginal_kws=dict(bins=20, fill=False))
     x.fig.suptitle('Risk at scale = '+str(scale))
     x.ax_joint.text(0, jointSampleDf['ESnorm'].quantile(0.99),
-                    'Risk with NM = '+str(":.3f}".format(risk))+'\n Risk = '+str("{:.3f}".format(risk)),
+                    'Risk with NM = '+str("{:.3f}".format(riskNM))+'\n Risk = '+str("{:.3f}".format(risk)),
                     bbox=dict(boxstyle='square', pad=0.3, edgecolor='orange', facecolor='yellow'))
     figName = 'laCounty_'+str(scale)+'.png'
     x.savefig(os.path.join('results\\plots', figName), bbox_inches='tight', dpi=300)
