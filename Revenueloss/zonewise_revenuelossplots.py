@@ -16,6 +16,7 @@ for zone in results['climate_zone'].unique():
     noOfCounties = data['county'].unique().size
     sns.boxplot(data=data, x='Revenue_pct_change', y='PV(kW)', orient='h',
                 hue='Net_metering', palette='Set1', ax=zonePlotAx,
+                hue_order=['0 * retail price', '0.25 * retail price', '0.5 * retail price'],
                 dodge=True, boxprops=dict(linewidth=0.7),
                 whiskerprops=dict(linestyle='--', linewidth=0.7),
                 medianprops=dict(linestyle='-', linewidth=0.5),
@@ -32,3 +33,4 @@ for zone in results['climate_zone'].unique():
     figName = zone + '.png'
     zonePlot.savefig(os.path.join('../results/plots', figName), bbox_inches='tight', dpi=500)
 
+k=1

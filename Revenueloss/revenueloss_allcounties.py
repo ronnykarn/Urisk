@@ -14,7 +14,8 @@ revenueLoss = pd.DataFrame(
              'Revenue_pct_change', 'Net_metering']
 )
 
-for netMetering in [True, False]:
+# netmeteringstate = ratio of netmetering price
+for netMeteringstate in [0, 1/2, 1/4]:
     for county in countiesData['county']:
         locationData = countiesData[countiesData['county'] == county]
         peakLoad = locationData.iloc[0]['peak_load']
@@ -29,10 +30,13 @@ for netMetering in [True, False]:
                             norm=False)
         residence.ESPowerLimit = 2 * peakLoad
 
-        if netMetering:
-            residence.netMeteringPrice = residence.retailPrice / 2
-        else:
+        if netMeteringstate == 0:
             residence.netMeteringPrice = 0
+        elif netMeteringstate == 1/2:
+            residence.netMeteringPrice = residence.retailPrice / 2
+        elif netMeteringstate == 1/4:
+            residence.netMeteringPrice = residence.retailPrice / 4
+
 
         PVMax = 10.5
         PVStep = 1.5
@@ -57,11 +61,11 @@ for netMetering in [True, False]:
                 'Revenue_loss': lostRevenue,
                 'Actual_revenue': revenueNoDER,
                 'Revenue_pct_change': (-lostRevenue) * 100 / revenueNoDER,
-                'Net_metering': netMetering
+                'Net_metering': str(netMeteringstate) + ' * retail price'
             }])
 
             revenueLoss = pd.concat([revenueLoss, to_append])
 
-revenueLoss.to_csv('results\\datafiles\\revenue_loss_all_counties.csv')
+revenueLoss.to_csv('results\\datafiles\\revenue_loss_all_counties.csv', index=False)
 
 k = 1

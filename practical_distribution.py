@@ -38,8 +38,8 @@ allCustomers[allCustomers < 0] = 0
 
 customerData = pd.DataFrame(allCustomers, columns=['PVnorm', 'ESnorm'])
 k = sns.jointplot(customerData, x='PVnorm', y='ESnorm')
-fig, ax = plt.subplot(1, 1)
-ax.hist()
+# fig, ax = plt.subplots()
+# ax.hist()
 
 cov = customerData.cov()
 k = 1

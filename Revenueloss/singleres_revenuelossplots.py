@@ -20,32 +20,47 @@ plt.rc('legend', fontsize=18)
 plt.rc('figure', titlesize=20)
 
 # import results
-revenueLossLA = pd.read_csv('../results/datafiles/revenue_loss_la.csv')
-revenueLossNMLA = pd.read_csv('../results/datafiles/revenue_loss_nm_la.csv')
+LAdata = pd.read_csv('results\\datafiles\\revenue_loss_la.csv')
 
-dfHeatmap = revenueLossLA.pivot(index='ES(kWh)', columns='PV(kW)', values='Revenue_loss')
+LANNM = LAdata[LAdata['Net_metering'] == '0 * retail price']
+LAQuartNM = LAdata[LAdata['Net_metering'] == '0.25 * retail price']
+LAHalfNM = LAdata[LAdata['Net_metering'] == '0.5 * retail price']
+
+
+dfHeatmap = LANNM.pivot(index='ES(kWh)', columns='PV(kW)', values='Revenue_pct_change')
 dfHeatmap = dfHeatmap.iloc[::-1]
-dfHeatmapNM = revenueLossNMLA.pivot(index='ES(kWh)', columns='PV(kW)', values='Revenue_loss')
-dfHeatmapNM = dfHeatmapNM.iloc[::-1]
+dfHeatmapQuartNM = LAQuartNM.pivot(index='ES(kWh)', columns='PV(kW)', values='Revenue_pct_change')
+dfHeatmapQuartNM = dfHeatmapQuartNM.iloc[::-1]
+dfHeatmapHalfNM = LAHalfNM.pivot(index='ES(kWh)', columns='PV(kW)', values='Revenue_pct_change')
+dfHeatmapHalfNM = dfHeatmapHalfNM.iloc[::-1]
 
-vMin = min(dfHeatmap.values.min(), dfHeatmapNM.values.min())
-vMax = max(dfHeatmap.values.max(), dfHeatmapNM.values.max())
+
+vMin = min(dfHeatmap.values.min(), dfHeatmapHalfNM.values.min())
+vMax = max(dfHeatmap.values.max(), dfHeatmapHalfNM.values.max())
 
 fig = plt.figure(figsize=(10, 6))
-fig.suptitle('Projected loss in Revenue - LA County')
-gs = fig.add_gridspec(1, 3, width_ratios=[4, 4, 0.25])
-(ax1, ax2, ax3) = gs.subplots()
+gs = fig.add_gridspec(1, 4, width_ratios=[4, 4, 4, 0.25])
+(ax1, ax2, ax3, ax4) = gs.subplots()
 
-sns.heatmap(dfHeatmap, cmap='Reds', vmin=vMin, vmax=vMax, square=True, linewidth=0.5, linecolor='black', ax=ax1,
+sns.heatmap(dfHeatmap, cmap='autumn', vmin=vMin, vmax=vMax, square=True, linewidth=0.5, linecolor='black', ax=ax1,
             cbar=None)
-ax1.set_title('Without Net Metering')
-sns.heatmap(dfHeatmapNM, cmap='Reds', vmin=vMin, vmax=vMax, square=True, linewidths=0.5, yticklabels=False,
+ax1.set_title('NMP = 0')
+
+sns.heatmap(dfHeatmapQuartNM, cmap='autumn', vmin=vMin, vmax=vMax, square=True, linewidths=0.5, yticklabels=False,
             linecolor='black', cbar=None, ax=ax2)
 ax2.set_ylabel('')
-ax2.set_title('With Net Metering')
-fig.colorbar(ax1.collections[0], cax=ax3)
-ax3.set_ylabel('Projected Loss($)')
+ax2.set_title('NMP = 0.25*REP')
 
-fig.figure.savefig("results\\plots\\revenue_loss_la.png", bbox_inches='tight', dpi=500)
+sns.heatmap(dfHeatmapHalfNM, cmap='autumn', vmin=vMin, vmax=vMax, square=True, linewidths=0.5, yticklabels=False,
+            linecolor='black', cbar=None, ax=ax3)
+ax3.set_ylabel('')
+ax3.set_title('NMP = 0.5*REP')
+
+fig.colorbar(ax3.collections[0], cax=ax4)
+ax4.set_ylabel('Percentage change in Revenue')
+
+fig.figure.savefig("results\\plots_v0\\revenue_loss_la.png", bbox_inches='tight', dpi=500)
+
+k=1
 
 
